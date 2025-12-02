@@ -14,6 +14,8 @@ in a compact, intuitive UI component.
 - ✅ Easy integration with existing Flutter projects
 - ✅ Follows Material Design 3 guidelines by default
 
+<img src="assets/demo.gif" width="213" alt="Menu Chip Demo">
+
 ## Getting started
 
 To add the menu_chip to your Flutter application follow the [installation instructions](https://pub.dev/packages/menu_chip/install) on pub.dev.
