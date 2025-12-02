@@ -2,6 +2,8 @@ name: menu_chip
 description: "A customizable Flutter chip widget with an integrated dropdown menu for selection interfaces."
 version: 0.0.1
 homepage: https://github.com/sainzriva/menu_chip
+repository: https://github.com/sainzriva/menu_chip.git
+issue_tracker: https://github.com/sainzriva/menu_chip/issues
 
 topics:
   - widget
