@@ -28,6 +28,7 @@ Example:
 import 'package:menu_chip/menu_chip.dart';
 
 final _key = GlobalKey<PopupMenuButtonState>(); // Place it as higher in your active widget tree as possible
+Srting? _chipValue;
 
 MaterialMenuChip(
     menuKey: _key,
