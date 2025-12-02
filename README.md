@@ -8,11 +8,11 @@ in a compact, intuitive UI component.
 
 ## Features
 
-- ✅ Filter chip with integrated dropdown menu
-- ✅ Customizable appearance (colors, icons, text)
-- ✅ Lightweight with minimal dependencies
-- ✅ Easy integration with existing Flutter projects
-- ✅ Follows Material Design 3 guidelines by default
+- Filter chip with integrated dropdown menu
+- Customizable appearance (colors, icons, text)
+- Lightweight with minimal dependencies
+- Easy integration with existing Flutter projects
+- Follows Material Design 3 guidelines by default
 
 <img src="assets/demo.gif" width="213" alt="Menu Chip Demo">
 
