@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     MenuChipItem(
       value: 'hike',
       avatar: Icon(Icons.hiking),
-      label: Text('Hicking'),
+      label: Text('Hiking'),
     ),
     MenuChipItem(
       value: 'cycle',
