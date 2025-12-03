@@ -14,13 +14,13 @@ in a compact, intuitive UI component.
 - Easy integration with existing Flutter projects
 - Follows Material Design 3 guidelines by default
 
-<img src="assets/demo.gif" width="213" alt="Menu Chip Demo">
+<img src="https://raw.githubusercontent.com/sainzriva/menu_chip/main/assets/demo.gif" width="300" alt="Menu Chip Demo">
 
 Based on [Material Design 3](https://m3.material.io/components/chips/guidelines)
 
 ## Getting started
 
-To add the menu_chip to your Flutter application follow the [installation instructions](https://pub.dev/packages/menu_chip/install) on pub.dev.
+To add the menu_chip to your Flutter application follow the [installation instructions](https://pub.dev/packages/menu_chip/install) on pub.dev
 
 ## Usage
 
@@ -29,7 +29,8 @@ Example:
 ```dart
 import 'package:menu_chip/menu_chip.dart';
 
-final _key = GlobalKey<PopupMenuButtonState>(); // Place it as higher in your active widget tree as possible
+// Place it as higher in your active widget tree as possible
+final _key = GlobalKey<PopupMenuButtonState>();
 Srting? _chipValue;
 
 MaterialMenuChip(
