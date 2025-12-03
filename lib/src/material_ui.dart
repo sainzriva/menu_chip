@@ -58,7 +58,7 @@ import '../src/model.dart' show MenuChipItem;
 ///
 /// // Place it as higher in your active widget tree as possible
 /// final _key = GlobalKey<PopupMenuButtonState>();
-/// Srting? _chipValue;
+/// String? _chipValue;
 ///
 /// MaterialMenuChip(
 ///   menuKey: _key,
