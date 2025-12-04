@@ -15,7 +15,7 @@ in a compact, intuitive UI component.
 - Easy integration with existing Flutter projects
 - Follows Material Design 3 guidelines by default
 
-<img src="https://raw.githubusercontent.com/sainzriva/menu_chip/main/assets/demo.gif" width="300" alt="Menu Chip Demo">
+<img src="https://raw.githubusercontent.com/sainzriva/menu_chip/main/assets/demo.gif" width="200" alt="Menu Chip Demo">
 
 Based on [Material Design 3](https://m3.material.io/components/chips/guidelines)
 
