@@ -1,15 +1,13 @@
-import 'dart:ui' show BlendMode, Clip, Color, ColorFilter, Radius;
+import 'dart:ui' show BlendMode, Clip, Color, ColorFilter, TextDirection;
 import 'package:flutter/foundation.dart' show Key, ValueChanged, ValueKey;
 import 'package:flutter/painting.dart'
     show CircleBorder, Offset, OutlinedBorder;
 import 'package:flutter/animation.dart' show AnimationStyle;
 import 'package:flutter/rendering.dart'
     show
-        BorderRadius,
         BorderSide,
         BoxConstraints,
         EdgeInsetsGeometry,
-        MainAxisSize,
         MouseCursor,
         ShapeBorder,
         TextStyle;
@@ -18,32 +16,35 @@ import 'package:flutter/widgets.dart'
         AnimatedSwitcher,
         BuildContext,
         ColorFiltered,
+        Directionality,
         FadeTransition,
+        FocusNode,
         GlobalKey,
         Icon,
         KeyedSubtree,
-        Row,
+        Positioned,
         ScaleTransition,
+        SizedBox,
+        Stack,
         State,
         StatefulWidget,
         Widget,
-        WidgetStateProperty,
-        FocusNode;
+        WidgetStateProperty;
 import 'package:flutter/material.dart'
     show
+        ChipAnimationStyle,
         Colors,
         Durations,
         FilterChip,
         Icons,
         ListTile,
         MaterialLocalizations,
+        MaterialTapTargetSize,
         PopupMenuButton,
         PopupMenuButtonState,
         PopupMenuItem,
         PopupMenuPosition,
-        VisualDensity,
-        MaterialTapTargetSize,
-        ChipAnimationStyle;
+        VisualDensity;
 import '../src/model.dart' show MenuChipItem;
 
 /// A lightweight and customizable Flutter package that combines a filter chip
@@ -58,6 +59,7 @@ import '../src/model.dart' show MenuChipItem;
 ///
 /// // Place it as higher in your active widget tree as possible
 /// final _key = GlobalKey<PopupMenuButtonState>();
+///
 /// String? _chipValue;
 ///
 /// MaterialMenuChip(
@@ -329,19 +331,24 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
     }
 
     List<PopupMenuItem<T>> itemBuilder() {
+      final TextDirection textDirection = Directionality.of(context);
+
       return List<PopupMenuItem<T>>.generate(widget.menuItemsList.length, (i) {
         final item = widget.menuItemsList[i];
         return PopupMenuItem<T>(
           value: item.value,
-          child: ListTile(leading: item.avatar, title: item.label),
+          child: Directionality(
+            textDirection: textDirection,
+            child: ListTile(leading: item.avatar, title: item.label),
+          ),
         );
       });
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <PopupMenuButton<T>>[
-        PopupMenuButton<T>(
+    return Stack(children: [
+      Positioned(
+        bottom: 0,
+        child: PopupMenuButton<T>(
           key: widget.menuKey,
           itemBuilder: (_) => itemBuilder(),
           initialValue: widget.selectedValue,
@@ -355,7 +362,6 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
           shadowColor: widget.menuStyle?.shadowColor,
           surfaceTintColor: widget.menuStyle?.surfaceTintColor,
           menuPadding: widget.menuStyle?.menuPadding,
-          borderRadius: const BorderRadius.all(Radius.circular(1000)),
           offset: widget.menuStyle?.offset ?? Offset.zero,
           color: widget.menuStyle?.color,
           enableFeedback: widget.menuStyle?.enableFeedback,
@@ -364,56 +370,55 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
           clipBehavior: widget.menuStyle?.clipBehavior ?? Clip.none,
           popUpAnimationStyle: widget.menuStyle?.popUpAnimationStyle,
           requestFocus: widget.menuStyle?.requestFocus,
-          child: FilterChip(
-            avatar: iconAnimation(chipAvatar()),
-            label: chipLabel(),
-            selected: _isSelected,
-            onSelected: widget.isChipEnabled
-                ? (_) {
-                    widget.menuKey.currentState?.showButtonMenu();
-                  }
-                : null,
-            deleteIcon: iconAnimation(trailingIcon()),
-            onDeleted: () {
-              _isSelected && _showDeleteIcon
-                  ? widget.onSelectionChanged.call(null)
-                  : widget.menuKey.currentState?.showButtonMenu();
-            },
-            labelStyle: labelStyle(),
-            deleteButtonTooltipMessage: trailingMessage(),
-            deleteIconColor: trailingIconColor(),
-            labelPadding: widget.chipStyle?.labelPadding,
-            pressElevation: widget.chipStyle?.pressElevation,
-            disabledColor: widget.chipStyle?.disabledColor,
-            selectedColor: widget.chipStyle?.selectedColor,
-            tooltip: widget.chipStyle?.tooltip ?? '',
-            side: widget.chipStyle?.side,
-            shape: widget.chipStyle?.shape,
-            clipBehavior: widget.chipStyle?.clipBehavior ?? Clip.none,
-            focusNode: widget.chipStyle?.focusNode,
-            autofocus: widget.chipStyle?.autofocus ?? false,
-            color: widget.chipStyle?.color,
-            backgroundColor: widget.chipStyle?.backgroundColor,
-            padding: widget.chipStyle?.padding,
-            visualDensity: widget.chipStyle?.visualDensity,
-            materialTapTargetSize: widget.chipStyle?.materialTapTargetSize,
-            elevation: widget.chipStyle?.elevation,
-            shadowColor: widget.chipStyle?.shadowColor,
-            surfaceTintColor: widget.chipStyle?.surfaceTintColor,
-            selectedShadowColor: widget.chipStyle?.selectedShadowColor,
-            showCheckmark: widget.chipStyle?.showCheckmark,
-            checkmarkColor: widget.chipStyle?.checkmarkColor,
-            avatarBorder:
-                widget.chipStyle?.avatarBorder ?? const CircleBorder(),
-            avatarBoxConstraints: widget.chipStyle?.avatarBoxConstraints,
-            deleteIconBoxConstraints:
-                widget.chipStyle?.deleteIconBoxConstraints,
-            chipAnimationStyle: widget.chipStyle?.chipAnimationStyle,
-            mouseCursor: widget.chipStyle?.mouseCursor,
-          ),
+          child: const SizedBox.shrink(),
         ),
-      ],
-    );
+      ),
+      FilterChip(
+        avatar: iconAnimation(chipAvatar()),
+        label: chipLabel(),
+        selected: _isSelected,
+        onSelected: widget.isChipEnabled
+            ? (_) {
+                widget.menuKey.currentState?.showButtonMenu();
+              }
+            : null,
+        deleteIcon: iconAnimation(trailingIcon()),
+        onDeleted: () {
+          _isSelected && _showDeleteIcon
+              ? widget.onSelectionChanged.call(null)
+              : widget.menuKey.currentState?.showButtonMenu();
+        },
+        labelStyle: labelStyle(),
+        deleteButtonTooltipMessage: trailingMessage(),
+        deleteIconColor: trailingIconColor(),
+        labelPadding: widget.chipStyle?.labelPadding,
+        pressElevation: widget.chipStyle?.pressElevation,
+        disabledColor: widget.chipStyle?.disabledColor,
+        selectedColor: widget.chipStyle?.selectedColor,
+        tooltip: widget.chipStyle?.tooltip ?? '',
+        side: widget.chipStyle?.side,
+        shape: widget.chipStyle?.shape,
+        clipBehavior: widget.chipStyle?.clipBehavior ?? Clip.none,
+        focusNode: widget.chipStyle?.focusNode,
+        autofocus: widget.chipStyle?.autofocus ?? false,
+        color: widget.chipStyle?.color,
+        backgroundColor: widget.chipStyle?.backgroundColor,
+        padding: widget.chipStyle?.padding,
+        visualDensity: widget.chipStyle?.visualDensity,
+        materialTapTargetSize: widget.chipStyle?.materialTapTargetSize,
+        elevation: widget.chipStyle?.elevation,
+        shadowColor: widget.chipStyle?.shadowColor,
+        surfaceTintColor: widget.chipStyle?.surfaceTintColor,
+        selectedShadowColor: widget.chipStyle?.selectedShadowColor,
+        showCheckmark: widget.chipStyle?.showCheckmark,
+        checkmarkColor: widget.chipStyle?.checkmarkColor,
+        avatarBorder: widget.chipStyle?.avatarBorder ?? const CircleBorder(),
+        avatarBoxConstraints: widget.chipStyle?.avatarBoxConstraints,
+        deleteIconBoxConstraints: widget.chipStyle?.deleteIconBoxConstraints,
+        chipAnimationStyle: widget.chipStyle?.chipAnimationStyle,
+        mouseCursor: widget.chipStyle?.mouseCursor,
+      ),
+    ]);
   }
 }
 
