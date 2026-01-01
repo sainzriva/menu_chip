@@ -11,6 +11,10 @@ topics:
   - menu
   - dropdown
 
+screenshots:
+  - description: 'This screenshot shows the menu display.'
+    path: assets/demo.gif
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.7.0"
