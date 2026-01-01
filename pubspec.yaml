@@ -13,7 +13,7 @@ topics:
 
 screenshots:
   - description: 'This screenshot shows the menu display.'
-    path: assets/demo.gif
+    path: assets/screenshot.png
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

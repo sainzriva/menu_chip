@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Screenshot added.
+
 ## 1.0.1
 
 * Added right-to-left support.
