@@ -47,10 +47,6 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  final _menuKey0 = GlobalKey<PopupMenuButtonState>(),
-      _menuKey1 = GlobalKey<PopupMenuButtonState>(),
-      _menuKey2 = GlobalKey<PopupMenuButtonState>();
-
   String? _chip0, _chip1 = _modesList.first.value, _chip2;
 
   @override
@@ -58,7 +54,6 @@ class _HomePageState extends State<HomePage> {
     // Example of a default menu chip
     Widget defaultMenuChip() {
       return MaterialMenuChip(
-        menuKey: _menuKey0,
         menuItemsList: _modesList,
         selectedValue: _chip0,
         onSelectionChanged: (newValue) {
@@ -72,7 +67,6 @@ class _HomePageState extends State<HomePage> {
     // Example of a menu chip with no checkmark and remove icon
     Widget noCheckmarkMenuChip() {
       return MaterialMenuChip(
-        menuKey: _menuKey1,
         menuItemsList: _modesList,
         selectedValue: _chip1,
         onSelectionChanged: (newValue) {
@@ -91,7 +85,6 @@ class _HomePageState extends State<HomePage> {
     // Example of a custom menu chip
     Widget customMenuChip() {
       return MaterialMenuChip(
-        menuKey: _menuKey2,
         menuItemsList: _modesList,
         selectedValue: _chip2,
         onSelectionChanged: (newValue) {

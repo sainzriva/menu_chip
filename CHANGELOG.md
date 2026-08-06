@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Deprecated the public `menuKey` parameter; the menu key is now managed internally by `MaterialMenuChip`.
+
 ## 1.0.2
 
 * Screenshot added.

@@ -1,7 +1,7 @@
-import 'dart:ui' show BlendMode, Clip, Color, ColorFilter, TextDirection;
+import 'dart:ui' show BlendMode, Clip, Color, ColorFilter;
 import 'package:flutter/foundation.dart' show Key, ValueChanged, ValueKey;
 import 'package:flutter/painting.dart'
-    show CircleBorder, Offset, OutlinedBorder;
+    show AlignmentDirectional, CircleBorder, Offset, OutlinedBorder, Size;
 import 'package:flutter/animation.dart' show AnimationStyle;
 import 'package:flutter/rendering.dart'
     show
@@ -15,35 +15,36 @@ import 'package:flutter/widgets.dart'
     show
         AnimatedSwitcher,
         BuildContext,
+        ColoredBox,
         ColorFiltered,
-        Directionality,
         FadeTransition,
         FocusNode,
         GlobalKey,
         Icon,
         KeyedSubtree,
-        Positioned,
+        MenuController,
         ScaleTransition,
-        SizedBox,
-        Stack,
         State,
         StatefulWidget,
         Widget,
-        WidgetStateProperty;
+        WidgetStateProperty,
+        WidgetStatePropertyAll;
 import 'package:flutter/material.dart'
     show
+        ButtonStyle,
         ChipAnimationStyle,
         Colors,
         Durations,
         FilterChip,
         Icons,
-        ListTile,
         MaterialLocalizations,
         MaterialTapTargetSize,
-        PopupMenuButton,
+        MenuAnchor,
+        MenuItemButton,
+        MenuStyle,
         PopupMenuButtonState,
-        PopupMenuItem,
         PopupMenuPosition,
+        Theme,
         VisualDensity;
 import '../src/model.dart' show MenuChipItem;
 
@@ -53,17 +54,13 @@ import '../src/model.dart' show MenuChipItem;
 /// Perfect for creating selection interfaces where users need to choose from
 /// multiple options in a compact, intuitive UI component.
 ///
-/// /// ### Example:
+/// ### Example:
 /// ```dart
 /// import 'package:menu_chip/menu_chip.dart';
-///
-/// // Place it as higher in your active widget tree as possible
-/// final _key = GlobalKey<PopupMenuButtonState>();
 ///
 /// String? _chipValue;
 ///
 /// MaterialMenuChip(
-///   menuKey: _key,
 ///   menuItemsList: [
 ///     MenuChipItem(
 ///       value: 'option1',
@@ -89,14 +86,15 @@ import '../src/model.dart' show MenuChipItem;
 /// - [MaterialChipStyle], for customizing the chip's appearance
 /// - [MaterialPopupMenuStyle], for customizing the dropdown menu
 class MaterialMenuChip<T> extends StatefulWidget {
-  /// A [GlobalKey] for the underlying [PopupMenuButton].
+  /// A [GlobalKey] formerly used for the underlying popup menu.
   ///
-  /// Place this key as high in your widget tree as possible to ensure
-  /// proper menu positioning and state management.
-  ///
-  /// This key allows programmatic control of the menu (opening/closing)
-  /// and is required for the widget to function correctly.
-  final GlobalKey<PopupMenuButtonState> menuKey;
+  /// **Deprecated:** The menu is now managed internally via [MenuAnchor].
+  /// This parameter is ignored and will be removed in a future release.
+  @Deprecated(
+    'The menu is now managed internally via MenuAnchor. '
+    'This parameter will be removed in a future release.',
+  )
+  final GlobalKey<PopupMenuButtonState>? menuKey;
 
   /// The list of selectable items to display in the dropdown menu.
   ///
@@ -175,13 +173,17 @@ class MaterialMenuChip<T> extends StatefulWidget {
 
   /// Creates a Material Design chip with dropdown menu.
   ///
-  /// The [menuKey], [menuItemsList], [onSelectionChanged], and [chipLabel]
+  /// The [menuItemsList], [onSelectionChanged], and [chipLabel]
   /// parameters are required and must not be `null`.
   ///
   /// All other parameters are optional with sensible defaults.
   const MaterialMenuChip({
     super.key,
-    required this.menuKey,
+    @Deprecated(
+      'The menu is now managed internally via MenuAnchor. '
+      'This parameter will be removed in a future release.',
+    )
+    this.menuKey,
     required this.menuItemsList,
     this.selectedValue,
     required this.onSelectionChanged,
@@ -302,7 +304,8 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
       return switch (_trailingStatus) {
         _TrailingStatus.expand => widget.chipStyle?.expandTooltipMessage ??
             MaterialLocalizations.of(context).collapsedIconTapHint,
-        _TrailingStatus.collapse => null,
+        _TrailingStatus.collapse =>
+          MaterialLocalizations.of(context).expandedIconTapHint,
         _TrailingStatus.delete => widget.chipStyle?.deleteButtonTooltipMessage,
       };
     }
@@ -330,95 +333,132 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
             );
     }
 
-    List<PopupMenuItem<T>> itemBuilder() {
-      final TextDirection textDirection = Directionality.of(context);
-
-      return List<PopupMenuItem<T>>.generate(widget.menuItemsList.length, (i) {
+    List<Widget> menuChildren() {
+      return List<Widget>.generate(widget.menuItemsList.length, (i) {
         final item = widget.menuItemsList[i];
-        return PopupMenuItem<T>(
-          value: item.value,
-          child: Directionality(
-            textDirection: textDirection,
-            child: ListTile(leading: item.avatar, title: item.label),
-          ),
+        Widget menuItem = MenuItemButton(
+          leadingIcon: item.avatar,
+          requestFocusOnHover: false,
+          onPressed: () {
+            _updateMenu(_MenuAction.onSelected, value: item.value);
+          },
+          style: widget.menuStyle?.enableFeedback != null
+              ? ButtonStyle(
+                  enableFeedback: widget.menuStyle!.enableFeedback,
+                )
+              : null,
+          child: item.label,
         );
+
+        if (widget.selectedValue != null &&
+            item.value == widget.selectedValue) {
+          menuItem = ColoredBox(
+            color: Theme.of(context).highlightColor,
+            child: menuItem,
+          );
+        }
+
+        return menuItem;
       });
     }
 
-    return Stack(children: [
-      Positioned(
-        bottom: 0,
-        child: PopupMenuButton<T>(
-          key: widget.menuKey,
-          itemBuilder: (_) => itemBuilder(),
-          initialValue: widget.selectedValue,
-          onOpened: () => _updateMenu(_MenuAction.onOpen),
-          onSelected: (T newValue) {
-            _updateMenu(_MenuAction.onSelected, value: newValue);
-          },
-          onCanceled: () => _updateMenu(_MenuAction.onCanceled),
-          tooltip: '',
-          elevation: widget.menuStyle?.elevation,
-          shadowColor: widget.menuStyle?.shadowColor,
-          surfaceTintColor: widget.menuStyle?.surfaceTintColor,
-          menuPadding: widget.menuStyle?.menuPadding,
-          offset: widget.menuStyle?.offset ?? Offset.zero,
-          color: widget.menuStyle?.color,
-          enableFeedback: widget.menuStyle?.enableFeedback,
-          constraints: widget.menuStyle?.constraints,
-          position: widget.menuStyle?.position ?? PopupMenuPosition.under,
-          clipBehavior: widget.menuStyle?.clipBehavior ?? Clip.none,
-          popUpAnimationStyle: widget.menuStyle?.popUpAnimationStyle,
-          requestFocus: widget.menuStyle?.requestFocus,
-          child: const SizedBox.shrink(),
-        ),
-      ),
-      FilterChip(
-        avatar: iconAnimation(chipAvatar()),
-        label: chipLabel(),
-        selected: _isSelected,
-        onSelected: widget.isChipEnabled
-            ? (_) {
-                widget.menuKey.currentState?.showButtonMenu();
-              }
+    MenuStyle effectiveMenuStyle() {
+      final MaterialPopupMenuStyle? style = widget.menuStyle;
+      final BoxConstraints? constraints = style?.constraints;
+
+      return MenuStyle(
+        elevation: style?.elevation != null
+            ? WidgetStatePropertyAll<double?>(style!.elevation)
             : null,
-        deleteIcon: iconAnimation(trailingIcon()),
-        onDeleted: () {
-          _isSelected && _showDeleteIcon
-              ? widget.onSelectionChanged.call(null)
-              : widget.menuKey.currentState?.showButtonMenu();
+        shadowColor: style?.shadowColor != null
+            ? WidgetStatePropertyAll<Color?>(style!.shadowColor)
+            : null,
+        surfaceTintColor: style?.surfaceTintColor != null
+            ? WidgetStatePropertyAll<Color?>(style!.surfaceTintColor)
+            : null,
+        padding: style?.menuPadding != null
+            ? WidgetStatePropertyAll<EdgeInsetsGeometry?>(style!.menuPadding)
+            : null,
+        backgroundColor: style?.color != null
+            ? WidgetStatePropertyAll<Color?>(style!.color)
+            : null,
+        minimumSize: constraints != null
+            ? WidgetStatePropertyAll<Size?>(
+                Size(constraints.minWidth, constraints.minHeight),
+              )
+            : null,
+        maximumSize: constraints != null
+            ? WidgetStatePropertyAll<Size?>(
+                Size(constraints.maxWidth, constraints.maxHeight),
+              )
+            : null,
+        alignment: switch (style?.position ?? PopupMenuPosition.under) {
+          PopupMenuPosition.under => AlignmentDirectional.bottomStart,
+          PopupMenuPosition.over => AlignmentDirectional.topStart,
         },
-        labelStyle: labelStyle(),
-        deleteButtonTooltipMessage: trailingMessage(),
-        deleteIconColor: trailingIconColor(),
-        labelPadding: widget.chipStyle?.labelPadding,
-        pressElevation: widget.chipStyle?.pressElevation,
-        disabledColor: widget.chipStyle?.disabledColor,
-        selectedColor: widget.chipStyle?.selectedColor,
-        tooltip: widget.chipStyle?.tooltip ?? '',
-        side: widget.chipStyle?.side,
-        shape: widget.chipStyle?.shape,
-        clipBehavior: widget.chipStyle?.clipBehavior ?? Clip.none,
-        focusNode: widget.chipStyle?.focusNode,
-        autofocus: widget.chipStyle?.autofocus ?? false,
-        color: widget.chipStyle?.color,
-        backgroundColor: widget.chipStyle?.backgroundColor,
-        padding: widget.chipStyle?.padding,
-        visualDensity: widget.chipStyle?.visualDensity,
-        materialTapTargetSize: widget.chipStyle?.materialTapTargetSize,
-        elevation: widget.chipStyle?.elevation,
-        shadowColor: widget.chipStyle?.shadowColor,
-        surfaceTintColor: widget.chipStyle?.surfaceTintColor,
-        selectedShadowColor: widget.chipStyle?.selectedShadowColor,
-        showCheckmark: widget.chipStyle?.showCheckmark,
-        checkmarkColor: widget.chipStyle?.checkmarkColor,
-        avatarBorder: widget.chipStyle?.avatarBorder ?? const CircleBorder(),
-        avatarBoxConstraints: widget.chipStyle?.avatarBoxConstraints,
-        deleteIconBoxConstraints: widget.chipStyle?.deleteIconBoxConstraints,
-        chipAnimationStyle: widget.chipStyle?.chipAnimationStyle,
-        mouseCursor: widget.chipStyle?.mouseCursor,
-      ),
-    ]);
+      );
+    }
+
+    void toggleMenu(MenuController controller) {
+      if (controller.isOpen) {
+        controller.close();
+      } else {
+        controller.open();
+      }
+    }
+
+    return MenuAnchor(
+      onOpen: () => _updateMenu(_MenuAction.onOpen),
+      onClose: () => _updateMenu(_MenuAction.onCanceled),
+      alignmentOffset: widget.menuStyle?.offset ?? Offset.zero,
+      clipBehavior: widget.menuStyle?.clipBehavior ?? Clip.none,
+      style: effectiveMenuStyle(),
+      menuChildren: menuChildren(),
+      builder: (BuildContext _, MenuController controller, Widget? child) {
+        return FilterChip(
+          avatar: iconAnimation(chipAvatar()),
+          label: chipLabel(),
+          selected: _isSelected,
+          onSelected:
+              widget.isChipEnabled ? (_) => toggleMenu(controller) : null,
+          deleteIcon: iconAnimation(trailingIcon()),
+          onDeleted: () {
+            _trailingStatus == _TrailingStatus.delete
+                ? widget.onSelectionChanged.call(null)
+                : toggleMenu(controller);
+          },
+          labelStyle: labelStyle(),
+          deleteButtonTooltipMessage: trailingMessage(),
+          deleteIconColor: trailingIconColor(),
+          labelPadding: widget.chipStyle?.labelPadding,
+          pressElevation: widget.chipStyle?.pressElevation,
+          disabledColor: widget.chipStyle?.disabledColor,
+          selectedColor: widget.chipStyle?.selectedColor,
+          tooltip: widget.chipStyle?.tooltip ?? '',
+          side: widget.chipStyle?.side,
+          shape: widget.chipStyle?.shape,
+          clipBehavior: widget.chipStyle?.clipBehavior ?? Clip.none,
+          focusNode: widget.chipStyle?.focusNode,
+          autofocus: widget.chipStyle?.autofocus ?? false,
+          color: widget.chipStyle?.color,
+          backgroundColor: widget.chipStyle?.backgroundColor,
+          padding: widget.chipStyle?.padding,
+          visualDensity: widget.chipStyle?.visualDensity,
+          materialTapTargetSize: widget.chipStyle?.materialTapTargetSize,
+          elevation: widget.chipStyle?.elevation,
+          shadowColor: widget.chipStyle?.shadowColor,
+          surfaceTintColor: widget.chipStyle?.surfaceTintColor,
+          selectedShadowColor: widget.chipStyle?.selectedShadowColor,
+          showCheckmark: widget.chipStyle?.showCheckmark,
+          checkmarkColor: widget.chipStyle?.checkmarkColor,
+          avatarBorder: widget.chipStyle?.avatarBorder ?? const CircleBorder(),
+          avatarBoxConstraints: widget.chipStyle?.avatarBoxConstraints,
+          deleteIconBoxConstraints: widget.chipStyle?.deleteIconBoxConstraints,
+          chipAnimationStyle: widget.chipStyle?.chipAnimationStyle,
+          mouseCursor: widget.chipStyle?.mouseCursor,
+        );
+      },
+    );
   }
 }
 
