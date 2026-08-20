@@ -1,4 +1,5 @@
 import 'dart:ui' show BlendMode, Clip, Color, ColorFilter;
+
 import 'package:flutter/foundation.dart' show Key, ValueChanged, ValueKey;
 import 'package:flutter/painting.dart'
     show AlignmentDirectional, CircleBorder, Offset, OutlinedBorder, Size;
@@ -29,7 +30,7 @@ import 'package:flutter/widgets.dart'
         Widget,
         WidgetStateProperty,
         WidgetStatePropertyAll;
-import 'package:flutter/material.dart'
+import 'package:material_ui/material_ui.dart'
     show
         ButtonStyle,
         ChipAnimationStyle,
@@ -46,6 +47,7 @@ import 'package:flutter/material.dart'
         PopupMenuPosition,
         Theme,
         VisualDensity;
+
 import '../src/model.dart' show MenuChipItem;
 
 /// A lightweight and customizable Flutter package that combines a filter chip
@@ -291,21 +293,26 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
 
     Widget trailingIcon() {
       return switch (_trailingStatus) {
-        _TrailingStatus.expand => widget.chipStyle?.expandIcon ??
-            const Icon(key: ValueKey('expand'), Icons.arrow_drop_down),
-        _TrailingStatus.collapse => widget.chipStyle?.collapseIcon ??
-            const Icon(key: ValueKey('collapse'), Icons.arrow_drop_up),
-        _TrailingStatus.delete => widget.chipStyle?.deleteIcon ??
-            const Icon(key: ValueKey('remove'), Icons.close),
+        _TrailingStatus.expand =>
+          widget.chipStyle?.expandIcon ??
+              const Icon(key: ValueKey('expand'), Icons.arrow_drop_down),
+        _TrailingStatus.collapse =>
+          widget.chipStyle?.collapseIcon ??
+              const Icon(key: ValueKey('collapse'), Icons.arrow_drop_up),
+        _TrailingStatus.delete =>
+          widget.chipStyle?.deleteIcon ??
+              const Icon(key: ValueKey('remove'), Icons.close),
       };
     }
 
     String? trailingMessage() {
       return switch (_trailingStatus) {
-        _TrailingStatus.expand => widget.chipStyle?.expandTooltipMessage ??
-            MaterialLocalizations.of(context).collapsedIconTapHint,
-        _TrailingStatus.collapse =>
-          MaterialLocalizations.of(context).expandedIconTapHint,
+        _TrailingStatus.expand =>
+          widget.chipStyle?.expandTooltipMessage ??
+              MaterialLocalizations.of(context).collapsedIconTapHint,
+        _TrailingStatus.collapse => MaterialLocalizations.of(
+          context,
+        ).expandedIconTapHint,
         _TrailingStatus.delete => widget.chipStyle?.deleteButtonTooltipMessage,
       };
     }
@@ -343,9 +350,7 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
             _updateMenu(_MenuAction.onSelected, value: item.value);
           },
           style: widget.menuStyle?.enableFeedback != null
-              ? ButtonStyle(
-                  enableFeedback: widget.menuStyle!.enableFeedback,
-                )
+              ? ButtonStyle(enableFeedback: widget.menuStyle!.enableFeedback)
               : null,
           child: item.label,
         );
@@ -419,8 +424,9 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
           avatar: iconAnimation(chipAvatar()),
           label: chipLabel(),
           selected: _isSelected,
-          onSelected:
-              widget.isChipEnabled ? (_) => toggleMenu(controller) : null,
+          onSelected: widget.isChipEnabled
+              ? (_) => toggleMenu(controller)
+              : null,
           deleteIcon: iconAnimation(trailingIcon()),
           onDeleted: () {
             _trailingStatus == _TrailingStatus.delete

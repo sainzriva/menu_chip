@@ -1,3 +1,8 @@
+## 2.0.0
+
+* Migrated from `package:flutter/material.dart` to `material_ui` package.
+* Requires Flutter ≥3.44 and Dart ≥3.12.
+
 ## 1.1.0
 
 * Deprecated the public `menuKey` parameter; the menu key is now managed internally by `MaterialMenuChip`.

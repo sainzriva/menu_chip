@@ -2,6 +2,8 @@ A Flutter filter chip with a built-in dropdown menu for single-value selection.
 
 `MaterialMenuChip` opens a Material 3 menu from a chip, shows the current selection, and lets users clear it—ideal for compact filters in toolbars, search bars, and list headers.
 
+Requires Flutter ≥3.44 and uses the standalone [`material_ui`](https://pub.dev/packages/material_ui) package (pulled in transitively). Host apps should use `material_ui`'s `MaterialApp` / theme, or wrap legacy Material subtrees with `MaterialUiCompatibilityBridge`.
+
 [![Pub Version](https://img.shields.io/pub/v/menu_chip.svg)](https://pub.dev/packages/menu_chip)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://pub.dev/packages/menu_chip/license)
 ![GitHub open issues](https://img.shields.io/github/issues-raw/sainzriva/menu_chip)
@@ -13,7 +15,7 @@ A Flutter filter chip with a built-in dropdown menu for single-value selection.
 - Typed single selection with optional clear
 - Customizable chip and menu styles (`MaterialChipStyle`, `MaterialPopupMenuStyle`)
 - Leading avatars on the chip and menu items
-- Zero dependencies beyond the Flutter SDK
+- Built on [`material_ui`](https://pub.dev/packages/material_ui) (no other third-party deps)
 - RTL support out of the box
 
 <img src="https://raw.githubusercontent.com/sainzriva/menu_chip/main/assets/demo.gif" width="200" alt="Menu Chip Demo">
