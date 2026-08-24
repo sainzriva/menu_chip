@@ -1,6 +1,6 @@
 name: menu_chip
 description: "A customizable chip widget with an integrated dropdown menu for single-value selection."
-version: 2.0.0
+version: 2.0.1
 repository: https://github.com/sainzriva/menu_chip.git
 issue_tracker: https://github.com/sainzriva/menu_chip/issues
 

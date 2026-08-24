@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Fixed the popup menu open and close animation.
+
 ## 2.0.0
 
 * Migrated from `package:flutter/material.dart` to `material_ui` package.

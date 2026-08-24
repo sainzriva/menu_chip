@@ -3,7 +3,7 @@ import 'dart:ui' show BlendMode, Clip, Color, ColorFilter;
 import 'package:flutter/foundation.dart' show Key, ValueChanged, ValueKey;
 import 'package:flutter/painting.dart'
     show AlignmentDirectional, CircleBorder, Offset, OutlinedBorder, Size;
-import 'package:flutter/animation.dart' show AnimationStyle;
+import 'package:flutter/animation.dart' show AnimationStatus, AnimationStyle;
 import 'package:flutter/rendering.dart'
     show
         BorderSide,
@@ -206,6 +206,7 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
   late bool _showDeleteIcon;
   late bool _showCheckmark;
   late _TrailingStatus _trailingStatus;
+  AnimationStatus _menuAnimationStatus = AnimationStatus.dismissed;
 
   @override
   void initState() {
@@ -405,7 +406,7 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
     }
 
     void toggleMenu(MenuController controller) {
-      if (controller.isOpen) {
+      if (_menuAnimationStatus.isForwardOrCompleted) {
         controller.close();
       } else {
         controller.open();
@@ -413,13 +414,18 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
     }
 
     return MenuAnchor(
+      animated:
+          widget.menuStyle?.popUpAnimationStyle != AnimationStyle.noAnimation,
+      onAnimationStatusChanged: (AnimationStatus status) {
+        _menuAnimationStatus = status;
+      },
       onOpen: () => _updateMenu(_MenuAction.onOpen),
       onClose: () => _updateMenu(_MenuAction.onCanceled),
       alignmentOffset: widget.menuStyle?.offset ?? Offset.zero,
       clipBehavior: widget.menuStyle?.clipBehavior ?? Clip.none,
       style: effectiveMenuStyle(),
       menuChildren: menuChildren(),
-      builder: (BuildContext _, MenuController controller, Widget? child) {
+      builder: (_, MenuController controller, _) {
         return FilterChip(
           avatar: iconAnimation(chipAvatar()),
           label: chipLabel(),
@@ -1105,20 +1111,15 @@ class MaterialPopupMenuStyle {
 
   // final bool useRootNavigator;
 
-  /// Used to override the default animation curves and durations of the popup
-  /// menu's open and close transitions.
+  /// Used to override the default open and close animation of the popup menu.
   ///
-  /// If [AnimationStyle.curve] is provided, it will be used to override the
-  /// default popup animation curve. Otherwise, defaults to [Curves.linear].
+  /// The menu uses [MenuAnchor]'s Material 3 open and close animation by
+  /// default, matching the grow-and-fade behavior of a Material popup menu.
   ///
-  /// If [AnimationStyle.reverseCurve] is provided, it will be used to override
-  /// the default popup animation reverse curve. Otherwise, defaults to
-  /// Interval(0.0, 2.0 / 3.0).
+  /// To disable the animation, use [AnimationStyle.noAnimation].
   ///
-  /// If [AnimationStyle.duration] is provided, it will be used to override the
-  /// default popup animation duration. Otherwise, defaults to 300ms.
-  ///
-  /// To disable the theme animation, use [AnimationStyle.noAnimation].
+  /// Custom curves and durations are not applied; [MenuAnchor] uses its built-in
+  /// animation timing.
   ///
   /// If this is null, then the default animation will be used.
   final AnimationStyle? popUpAnimationStyle;
