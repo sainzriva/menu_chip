@@ -414,6 +414,7 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
     }
 
     return MenuAnchor(
+      consumeOutsideTap: widget.menuStyle?.consumeOutsideTap ?? true,
       animated:
           widget.menuStyle?.popUpAnimationStyle != AnimationStyle.noAnimation,
       onAnimationStatusChanged: (AnimationStatus status) {
@@ -1128,6 +1129,16 @@ class MaterialPopupMenuStyle {
 
   // final ButtonStyle? style;
 
+  /// Whether a tap that closes the menu is consumed instead of reaching
+  /// widgets underneath.
+  ///
+  /// If true, tapping outside the open menu closes it without activating other
+  /// widgets. If false, the same tap both closes the menu and is delivered to
+  /// whatever is underneath.
+  ///
+  /// Defaults to true.
+  final bool consumeOutsideTap;
+
   /// Whether to request focus when the menu appears.
   ///
   /// If null, [Navigator.requestFocus] will be used instead.
@@ -1168,6 +1179,7 @@ class MaterialPopupMenuStyle {
     this.popUpAnimationStyle,
     // this.routeSettings,
     // this.style,
+    this.consumeOutsideTap = true,
     this.requestFocus,
   });
 }

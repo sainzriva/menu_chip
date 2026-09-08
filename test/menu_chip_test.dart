@@ -97,4 +97,109 @@ void main() {
     expect(selected, 'abc');
     expect(find.byIcon(Icons.close), findsOneWidget);
   });
+
+  testWidgets('Outside tap closes menu without activating sibling widgets', (
+    WidgetTester tester,
+  ) async {
+    var siblingPressed = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Row(
+            children: [
+              MaterialMenuChip(
+                menuItemsList: const [
+                  MenuChipItem(
+                    value: 'abc',
+                    avatar: Icon(Icons.abc),
+                    label: Text('ABC'),
+                  ),
+                  MenuChipItem(
+                    value: 'def',
+                    avatar: Icon(Icons.abc),
+                    label: Text('DEF'),
+                  ),
+                ],
+                selectedValue: null,
+                onSelectionChanged: (newValue) {},
+                chipLabel: const Text('test'),
+              ),
+              TextButton(
+                onPressed: () => siblingPressed = true,
+                child: const Text('sibling'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FilterChip));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ABC'), findsOneWidget);
+
+    await tester.tap(find.text('sibling'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ABC'), findsNothing);
+    expect(siblingPressed, isFalse);
+  });
+
+  testWidgets('Outside tap reaches sibling when consumeOutsideTap is false', (
+    WidgetTester tester,
+  ) async {
+    var siblingPressed = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Row(
+            children: [
+              MaterialMenuChip(
+                menuItemsList: const [
+                  MenuChipItem(
+                    value: 'abc',
+                    avatar: Icon(Icons.abc),
+                    label: Text('ABC'),
+                  ),
+                  MenuChipItem(
+                    value: 'def',
+                    avatar: Icon(Icons.abc),
+                    label: Text('DEF'),
+                  ),
+                ],
+                selectedValue: null,
+                onSelectionChanged: (newValue) {},
+                chipLabel: const Text('test'),
+                menuStyle: const MaterialPopupMenuStyle(
+                  consumeOutsideTap: false,
+                ),
+              ),
+              TextButton(
+                onPressed: () => siblingPressed = true,
+                child: const Text('sibling'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FilterChip));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ABC'), findsOneWidget);
+
+    await tester.tap(find.text('sibling'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ABC'), findsNothing);
+    expect(siblingPressed, isTrue);
+  });
 }

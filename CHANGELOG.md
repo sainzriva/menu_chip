@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Outside taps dismiss the menu without activating widgets underneath.
+  Configurable via `MaterialPopupMenuStyle.consumeOutsideTap` (defaults to true).
+
 ## 2.0.1
 
 * Fixed the popup menu open and close animation.
