@@ -23,11 +23,11 @@ Requires Flutter ≥3.44. Material widgets use the standalone [`material_ui`](ht
 
 <table>
   <tr>
-    <td align="center">
+    <td align="center" valign="top">
       <strong>Material menu chip</strong><br>
       <img src="https://raw.githubusercontent.com/sainzriva/menu_chip/main/assets/demo_material.gif" height="320" alt="Material menu chip">
     </td>
-    <td align="center">
+    <td align="center" valign="top">
       <strong>Cupertino menu chip</strong><br>
       <img src="https://raw.githubusercontent.com/sainzriva/menu_chip/main/assets/demo_cupertino.gif" height="320" alt="Cupertino menu chip">
     </td>
