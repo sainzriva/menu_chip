@@ -122,7 +122,8 @@ class MaterialMenuChip<T> extends StatefulWidget {
   /// Called when a menu item is selected or the selection is cleared.
   ///
   /// The callback receives the selected [MenuChipItem.value], or `null`
-  /// if the user clears the selection (via the delete icon when enabled).
+  /// if the user clears the selection (via the delete icon when enabled, or
+  /// by tapping the selected menu item when [enableUnselect] is true).
   ///
   /// Example:
   /// ```dart
@@ -156,6 +157,13 @@ class MaterialMenuChip<T> extends StatefulWidget {
   /// When `false` (default is `true`), the chip appears disabled
   /// and does not respond to taps or hover interactions.
   final bool isChipEnabled;
+
+  /// Whether tapping the currently selected menu item clears the selection.
+  ///
+  /// Defaults to false. When true, choosing the highlighted row calls
+  /// [onSelectionChanged] with `null`. Clearing via the delete icon is
+  /// unchanged.
+  final bool enableUnselect;
 
   /// Customization options for the chip's visual appearance.
   ///
@@ -192,6 +200,7 @@ class MaterialMenuChip<T> extends StatefulWidget {
     this.chipAvatar,
     required this.chipLabel,
     this.isChipEnabled = true,
+    this.enableUnselect = false,
     this.chipStyle,
     this.menuStyle,
   });
@@ -348,7 +357,11 @@ class _MaterialMenuChipState<T> extends State<MaterialMenuChip<T>> {
           leadingIcon: item.avatar,
           requestFocusOnHover: false,
           onPressed: () {
-            _updateMenu(_MenuAction.onSelected, value: item.value);
+            final T? value =
+                widget.enableUnselect && item.value == widget.selectedValue
+                ? null
+                : item.value;
+            _updateMenu(_MenuAction.onSelected, value: value);
           },
           style: widget.menuStyle?.enableFeedback != null
               ? ButtonStyle(enableFeedback: widget.menuStyle!.enableFeedback)

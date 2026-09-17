@@ -47,17 +47,33 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
-  String? _chip0, _chip1 = _modesList.first.value, _chip2;
+  String? _defaultChip;
+  String? _cupertinoChip;
+  String? _noCheckmarkChip = _modesList.first.value;
+  String? _customChip;
 
   @override
   Widget build(BuildContext context) {
-    // Example of a default menu chip
-    Widget defaultMenuChip() {
+    // Example of a default Material menu chip
+    Widget defaultMaterialMenuChip() {
       return MaterialMenuChip(
         menuItemsList: _modesList,
-        selectedValue: _chip0,
+        selectedValue: _defaultChip,
         onSelectionChanged: (newValue) {
-          setState(() => _chip0 = newValue);
+          setState(() => _defaultChip = newValue);
+        },
+        chipAvatar: _modeAvatar,
+        chipLabel: _modeLabel,
+      );
+    }
+
+    // Example of a default Cupertino menu chip
+    Widget defaultCupertinoMenuChip() {
+      return CupertinoMenuChip(
+        menuItemsList: _modesList,
+        selectedValue: _cupertinoChip,
+        onSelectionChanged: (newValue) {
+          setState(() => _cupertinoChip = newValue);
         },
         chipAvatar: _modeAvatar,
         chipLabel: _modeLabel,
@@ -68,11 +84,11 @@ class _HomePageState extends State<HomePage> {
     Widget noCheckmarkMenuChip() {
       return MaterialMenuChip(
         menuItemsList: _modesList,
-        selectedValue: _chip1,
+        selectedValue: _noCheckmarkChip,
         onSelectionChanged: (newValue) {
-          final String? update = newValue == _chip1 ? null : newValue;
-          setState(() => _chip1 = update);
+          setState(() => _noCheckmarkChip = newValue);
         },
+        enableUnselect: true,
         chipAvatar: _modeAvatar,
         chipLabel: _modeLabel,
         chipStyle: const MaterialChipStyle(
@@ -86,9 +102,9 @@ class _HomePageState extends State<HomePage> {
     Widget customMenuChip() {
       return MaterialMenuChip(
         menuItemsList: _modesList,
-        selectedValue: _chip2,
+        selectedValue: _customChip,
         onSelectionChanged: (newValue) {
-          setState(() => _chip2 = newValue);
+          setState(() => _customChip = newValue);
         },
         chipAvatar: _modeAvatar,
         chipLabel: _modeLabel,
@@ -111,7 +127,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [defaultMenuChip(), noCheckmarkMenuChip(), customMenuChip()],
+        children: [
+          defaultMaterialMenuChip(),
+          defaultCupertinoMenuChip(),
+          noCheckmarkMenuChip(),
+          customMenuChip(),
+        ],
       ),
     );
   }

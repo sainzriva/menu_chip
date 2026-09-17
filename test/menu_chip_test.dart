@@ -1,3 +1,4 @@
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:menu_chip/menu_chip.dart';
@@ -201,5 +202,126 @@ void main() {
 
     expect(find.text('ABC'), findsNothing);
     expect(siblingPressed, isTrue);
+  });
+
+  testWidgets('Cupertino chip has a menu', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: Center(
+            child: CupertinoMenuChip<String>(
+              menuItemsList: const [
+                CupertinoMenuChipItem(
+                  value: 'abc',
+                  label: Text('ABC'),
+                  subtitle: Text('Letters'),
+                ),
+                MenuChipItem(value: 'def', label: Text('DEF')),
+              ],
+              selectedValue: null,
+              onSelectionChanged: (newValue) {},
+              chipLabel: const Text('test'),
+              chipStyle: const CupertinoChipStyle(
+                variant: CupertinoMenuChipButtonVariant.tinted,
+              ),
+              menuStyle: const CupertinoPopupMenuStyle(
+                consumeOutsideTaps: true,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('test'), findsOneWidget);
+
+    await tester.tap(find.byType(CupertinoButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('ABC'), findsOneWidget);
+    expect(find.text('DEF'), findsOneWidget);
+  });
+
+  testWidgets('Cupertino chip keeps selection when the checked row is tapped', (
+    WidgetTester tester,
+  ) async {
+    String? selected = 'abc';
+
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return CupertinoMenuChip<String>(
+                  menuItemsList: const [
+                    MenuChipItem(value: 'abc', label: Text('ABC')),
+                    MenuChipItem(value: 'def', label: Text('DEF')),
+                  ],
+                  selectedValue: selected,
+                  onSelectionChanged: (newValue) {
+                    setState(() => selected = newValue);
+                  },
+                  chipLabel: const Text('test'),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(CupertinoButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ABC').last);
+    await tester.pumpAndSettle();
+
+    expect(selected, 'abc');
+    expect(find.text('test'), findsNothing);
+  });
+
+  testWidgets('Cupertino chip clears selection when enableUnselect is true', (
+    WidgetTester tester,
+  ) async {
+    String? selected = 'abc';
+
+    await tester.pumpWidget(
+      CupertinoApp(
+        home: CupertinoPageScaffold(
+          child: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return CupertinoMenuChip<String>(
+                  menuItemsList: const [
+                    MenuChipItem(value: 'abc', label: Text('ABC')),
+                    MenuChipItem(value: 'def', label: Text('DEF')),
+                  ],
+                  selectedValue: selected,
+                  onSelectionChanged: (newValue) {
+                    setState(() => selected = newValue);
+                  },
+                  chipLabel: const Text('test'),
+                  enableUnselect: true,
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(CupertinoButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('ABC').last);
+    await tester.pumpAndSettle();
+
+    expect(selected, isNull);
+    expect(find.text('test'), findsOneWidget);
   });
 }

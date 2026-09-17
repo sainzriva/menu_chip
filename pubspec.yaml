@@ -1,12 +1,12 @@
 name: menu_chip
 description: "A customizable chip widget with an integrated dropdown menu for single-value selection."
-version: 2.0.2
+version: 2.1.0
 repository: https://github.com/sainzriva/menu_chip.git
 issue_tracker: https://github.com/sainzriva/menu_chip/issues
 
 topics:
-  - widget
   - material-design
+  - cupertino
   - chips
   - menu
   - dropdown
@@ -22,7 +22,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_ui: ^1.1.1
+  cupertino_icons: ^1.0.8
+  cupertino_ui: 1.1.0
+  material_ui: 1.3.0
 
 dev_dependencies:
   flutter_test:

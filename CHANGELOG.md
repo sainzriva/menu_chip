@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Added `CupertinoMenuChip`, following Apple's Human Interface Guidelines.
+
 ## 2.0.2
 
 * Outside taps dismiss the menu without activating widgets underneath.
