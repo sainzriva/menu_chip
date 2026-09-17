@@ -42,6 +42,7 @@ To add the menu_chip to your Flutter application follow the [installation instru
 
 ## Usage
 
+Material menu chip:
 ```dart
 String? selection;
 
@@ -71,6 +72,7 @@ MaterialMenuChip(
 );
 ```
 
+Cupertino menu chip:
 ```dart
 String? selection;
 
